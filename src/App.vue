@@ -1,3 +1,38 @@
+<script setup>
+//зависимости
+import { ref } from "vue";
+import { v4 as uuidv4 } from "uuid";
+
+//данные
+//const list = ref([
+//   { id: "id1", text: "text1", isDone: false },
+//   { id: "id2", text: "text2", isDone: false },
+//   { id: "id3", text: "text3", isDone: false },
+//]);
+
+const toDolist = ref([]);
+const newToDoCon = ref("");
+const addMessage = () => {
+  const newList = { id: uuidv4(), text: newToDoCon.value, isDone: false };
+  toDolist.value.push(newList);
+  newToDoCon.value = "";
+  // newList.value.push(newList)
+};
+
+//компоненты
+
+//обработчики
+const delMessage = (id) => {
+  toDolist.value = toDolist.value.filter((item) => item.id !== id);
+};
+
+const togglerDone = (id) => {
+  const ind = toDolist.value.findIndex((item) => item.id === id);
+  toDolist.value[ind].isDone = !toDolist.value[ind].isDone;
+}
+
+</script>
+
 <template>
   <div class="wrapper">
     <div class="title text-has-centered">Мой список</div>
@@ -19,14 +54,16 @@
       </div>
     </form>
 
-    <div v-for="item in toDolist" :key="item" class="card mb-5">
+    <div v-for="item in toDolist" :key="item" class="card mb-5" :class="{'has-background-success-light' : item.isDone }">
       <div class="card-content mb-5">
         <div class="content">
           <div class="columns is-vcentered">
-            <div class="column">{{ item.text }}</div>
+            <div :class="{'has-text-success' : item.isDone}" class="column">{{ item.text }}</div>
             <div class="column has-text-right">
-              <button class="button mr-1">&check;</button>
-              <button class="button">&cross;</button>
+              <button @click="togglerDone(item.id)" :class="item.isDone ? 'is-success' : 'is-light'" class="button mr-1">&check;</button>
+              <button v-on:click="delMessage(item.id)" class="button">
+                &cross;
+              </button>
             </div>
           </div>
         </div>
@@ -35,30 +72,6 @@
   </div>
 </template>
 
-<script setup>
-//зависимости
-import { ref } from "vue";
-import { v4 as uuidv4 } from "uuid";
-
-//данные
-//const list = ref([
-//   { id: "id1", text: "text1", isDone: false },
-//   { id: "id2", text: "text2", isDone: false },
-//   { id: "id3", text: "text3", isDone: false },
-//]);
-
-//обработчики
-const toDolist = ref([]);
-const newToDoCon = ref("");
-const addMessage = () => {
-  const newList = { id: uuidv4(), text: newToDoCon.value, isDone: false };
-  // console.log(newList);
-  toDolist.value.push(newList);
-  newToDoCon.value = "";
-  // newList.value.push(newList)
-};
-//компоненты
-</script>
 
 <style>
 @import url("bulma/css/bulma.min.css");
