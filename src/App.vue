@@ -9,24 +9,20 @@ import {
   doc,
   deleteDoc,
   updateDoc,
+  query,
+  orderBy,
 } from "firebase/firestore";
 
 //данные
 const todosCollectionRef = collection(db, "todos");
+const todosCollectionOrder = query(todosCollectionRef, orderBy("date", "asc"));
 const toDolist = ref([]);
 const newToDoCon = ref("");
-const addMessage = () => {
-  const docRef = addDoc(todosCollectionRef, {
-    text: newToDoCon.value,
-    isDone: false,
-  });
-  newToDoCon.value = "";
-};
 
 //firebase
 
 onMounted(() => {
-  onSnapshot(todosCollectionRef, (querySnapshot) => {
+  onSnapshot(todosCollectionOrder, (querySnapshot) => {
     const fbToDos = [];
     querySnapshot.forEach((doc) => {
       const todo = {
@@ -42,7 +38,6 @@ onMounted(() => {
 
 //обработчики
 const delMessage = (id) => {
-  // toDolist.value = toDolist.value.filter((item) => item.id !== id);
   deleteDoc(doc(todosCollectionRef, id));
 };
 
@@ -53,6 +48,15 @@ const togglerDone = (id) => {
   updateDoc(change, {
     isDone: toDolist.value[ind].isDone,
   });
+};
+
+const addMessage = () => {
+  const docRef = addDoc(todosCollectionRef, {
+    text: newToDoCon.value,
+    isDone: false,
+    date: Date.now(),
+  });
+  newToDoCon.value = "";
 };
 </script>
 
